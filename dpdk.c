@@ -79,7 +79,7 @@ void send_udp_packet(struct rte_mempool* mbuf_pool, char* message, int len) {
     struct rte_udp_hdr *udp_hdr;
     udp_hdr = (struct rte_udp_hdr *)(ip_hdr + 1);
     udp_hdr->src_port = rte_cpu_to_be_16(cfg_udp_src);
-    udp_hdr->dst_port = rte_cpu_to_be_16(cfg_udp_src);
+    udp_hdr->dst_port = rte_cpu_to_be_16(cfg_udp_dst);
     udp_hdr->dgram_cksum = 0;
     udp_hdr->dgram_len = RTE_CPU_TO_BE_16(pkt_size - sizeof(*eth_hdr) - sizeof(*ip_hdr));
     

@@ -12,13 +12,11 @@ char* gen_random(const int len) {
         "0123456789"
         "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
         "abcdefghijklmnopqrstuvwxyz";
-    char* tmp_s = (char *)malloc(len * sizeof(char) + 1);
+    char* tmp_s = (char *)malloc(len * sizeof(char));
 
     for (int i = 0; i < len; ++i) {
         tmp_s[i] = alphanum[rand() % (sizeof(alphanum) - 1)];
     }
-
-    tmp_s[len] = '\0';
     
     return tmp_s;
 }
@@ -32,20 +30,19 @@ int main(int argc, char** argv) {
     int sfd = connect_(host, port);
     printf("Connected: %d\n", sfd);
 
-    send_(sfd, (char *)&COOKIE);
+    write(sfd, COOKIE, 37);
     printf("Sent cookie\n");
 
     unsigned char message_one[] = {0, 0, 0, 143};
-    send_(sfd, (char *)&message_one);
-    printf("Sent message one\n");
+    write(sfd, message_one, 4);
 
     char message_second[] = "{\"udp\":true,\"omit\":0,\"time\":10,\"num\":0,\"blockcount\":0,\"parallel\":1,\"len\":1000,\"bandwidth\":1048576,\"pacing_timer\":1000,\"client_version\":\"3.16+\"}";
-    send_(sfd, (char *)&message_second);
+    write(sfd, (char *)&message_second, sizeof(message_second) - 1);
     printf("Sent message second\n");
 
     char* message = gen_random(1000);
     
-    for (int i = 0; i < 1000000; i++) {
+    for (int i = 0; i < 10000000; i++) {
         send_udp_packet(mempool, message, strlen(message));    
     }
     
