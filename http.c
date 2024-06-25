@@ -60,18 +60,3 @@ int connect_(const char host[], const char port[]) {
     return sfd;
 }
 
-int send_(int sfd, const char *message) {
-    printf("strlen: %d\n", strlen(message));
-    int error = write(sfd, message, strlen(message));
-    if (error == -1) {
-        printf("Failed to write: %s\n", gai_strerror(errno));
-        return 0;
-    }
-    else if (error != strlen(message)) {
-        printf("Partially failed to write: %s\n", gai_strerror(errno));
-        return 0;
-    }
-
-    return 1;
-}
-

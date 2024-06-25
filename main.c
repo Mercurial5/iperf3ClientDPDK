@@ -28,36 +28,34 @@ int main(int argc, char** argv) {
     const char port[] = "5201";
 
     int sfd = connect_(host, port);
-    printf("Connected: %d\n", sfd);
+    if (sfd == -1) {
+        printf("Could not connect\n");
+        return 0;
+    }
 
     write(sfd, COOKIE, 37);
-    printf("Sent cookie\n");
 
     unsigned char message_one[] = {0, 0, 0, 143};
     write(sfd, message_one, 4);
 
     char message_second[] = "{\"udp\":true,\"omit\":0,\"time\":10,\"num\":0,\"blockcount\":0,\"parallel\":1,\"len\":1000,\"bandwidth\":1048576,\"pacing_timer\":1000,\"client_version\":\"3.16+\"}";
     write(sfd, (char *)&message_second, sizeof(message_second) - 1);
-    printf("Sent message second\n");
 
-    char* message = gen_random(1000);
-    
+    char* message = gen_random(1000);    
     for (int i = 0; i < 10000000; i++) {
-        send_udp_packet(mempool, message, strlen(message));    
-    }
-    
-    printf("Ended spam\n");
+        send_udp_packet(mempool, message, strlen(message));
+        if (i % 10000 == 0) printf("Sent %d packets", i);
+    }    
 
     int x = 4;
-    send_(sfd, (char *) &x);
-
+    write(sfd, (char *) &x, sizeof(char));
 
     x = 16;
-    send_(sfd, (char *) &x);
-
+    write(sfd, (char *) &x, sizeof(char));
 
     char* response = malloc(1025 * sizeof(char));
     int r = read(sfd, response, 1024); 
+    response[1024] = '\0';
 
     printf("response: %s\n", response);
     return 0;
