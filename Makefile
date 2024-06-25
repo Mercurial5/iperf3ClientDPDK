@@ -5,7 +5,7 @@
 APP = writer
 
 # all source are stored in SRCS-y
-SRCS-y := main.c
+SRCS-y := main.c dpdk.c http.c
 
 PKGCONF ?= pkg-config
 
