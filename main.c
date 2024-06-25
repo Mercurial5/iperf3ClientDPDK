@@ -44,7 +44,7 @@ int main(int argc, char** argv) {
     char* message = gen_random(1000);    
     for (int i = 0; i < 10000000; i++) {
         send_udp_packet(mempool, message, strlen(message));
-        if (i % 10000 == 0) printf("Sent %d packets", i);
+        if (i % 10000 == 0) printf("Sent %d packets\n", i);
     }    
 
     int x = 4;
