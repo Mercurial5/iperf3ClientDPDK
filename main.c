@@ -24,7 +24,7 @@ char* gen_random(const int len) {
 int main(int argc, char** argv) {
     struct rte_mempool* mempool = init_dpdk(argc, argv);
 
-    const char host[] = "192.168.25.125";
+    const char host[] = "192.168.137.97";
     const char port[] = "5201";
 
     int sfd = connect_(host, port);
@@ -40,10 +40,14 @@ int main(int argc, char** argv) {
 
     char message_second[] = "{\"udp\":true,\"omit\":0,\"time\":10,\"num\":0,\"blockcount\":0,\"parallel\":1,\"len\":1000,\"bandwidth\":1048576,\"pacing_timer\":1000,\"client_version\":\"3.16+\"}";
     write(sfd, (char *)&message_second, sizeof(message_second) - 1);
+    
+    char** messages = (char **)(malloc(10 * sizeof(char*)));
+    for (int i = 0; i < 10; i++) {
+        messages[i] = gen_random(1000);
+    }
 
-    char* message = gen_random(1000);    
-    for (int i = 0; i < 10000000; i++) {
-        send_udp_packet(mempool, message, strlen(message));
+    for (int i = 0; i < 1000000; i++) {
+        send_udp_packet_batch(mempool, messages, 10, 1000);
         if (i % 10000 == 0) printf("Sent %d packets\n", i);
     }    
 
@@ -58,5 +62,11 @@ int main(int argc, char** argv) {
     response[1024] = '\0';
 
     printf("response: %s\n", response);
+
+    for (int i = 0; i < 10; i++) {
+        free(messages[i]);
+    }
+
+    free(messages);
     return 0;
 }
